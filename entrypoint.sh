@@ -1,0 +1,1 @@
+python /opt/program/src/serve_app.py
