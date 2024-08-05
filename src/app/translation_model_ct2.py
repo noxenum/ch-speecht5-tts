@@ -59,6 +59,8 @@ class TranslationModelCT2:
                 tokenizer.convert_tokens_to_ids(output_tokens), skip_special_tokens=True
             )
 
+            pred = pred.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue")
+
             preds.append(pred)
 
         return preds

@@ -1,6 +1,6 @@
 import base64
 import io
-from typing import Union
+from typing import Optional, Union
 
 import numpy as np
 from fastapi import FastAPI
@@ -16,7 +16,8 @@ id_to_dialect = {0: "zh"}
 
 
 class TTSInputModel(BaseModel):
-    text_de: Union[str, list[str]]
+    text_de: Optional[Union[str, list[str]]] = None
+    text_ch: Optional[Union[str, list[str]]] = None
     voice_id: int
 
 
@@ -29,9 +30,15 @@ async def ping():
 async def predict(tts_input: TTSInputModel):
     dialect = id_to_dialect[tts_input.voice_id]
 
-    texts_ch = TranslationModelCT2.predict(
-        dialect=dialect, text_de=tts_input.text_de, beam_size=1
-    )
+    if tts_input.text_de is not None:
+        texts_ch = TranslationModelCT2.predict(
+            dialect=dialect, text_de=tts_input.text_de, beam_size=1
+        )
+    else:
+        texts_ch = tts_input.text_ch
+
+        if isinstance(texts_ch, str):
+            texts_ch = [texts_ch]
 
     wavs = []
     for text_ch in texts_ch:
